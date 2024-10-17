@@ -115,23 +115,23 @@ Follow these steps to set up and run the project locally.
 
 ### Admin :-Signup/login
 
-![logo](https://github.com/riturajnagar/sunbase_assignment/Images/Screenshot%20(43).png)
+![logo](https://github.com/riturajnagar/sunbase_assignment/blob/main/Images/Screenshot%20(43).png)
 
 ### Customer list 
 
-![logo](https://github.com/riturajnagar/sunbase_assignment/Images/Screenshot%20(48).png)
+![logo](https://github.com/riturajnagar/sunbase_assignment/blob/main/Images/Screenshot%20(48).png)
 
 ### Add Customer
 
-![logo](https://github.com/riturajnagar/sunbase_assignment/Images/Screenshot%20(49).png)
+![logo](https://github.com/riturajnagar/sunbase_assignment/blob/main/Images/Screenshot%20(49).png)
 
 ### update
 
-![logo](https://github.com/riturajnagar/sunbase_assignment/Images/Screenshot%20(50).png)
+![logo](https://github.com/riturajnagar/sunbase_assignment/blob/main/Images/Screenshot%20(50).png)
 
 ### Database schema
 
-![logo](https://github.com/riturajnagar/sunbase_assignment/Images/Screenshot%20(52).png)
+![logo](https://github.com/riturajnagar/sunbase_assignment/blob/main/Images/Screenshot%20(52).png)
 
 ## Contact
 
