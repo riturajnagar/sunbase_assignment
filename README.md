@@ -47,8 +47,8 @@ Follow these steps to set up and run the project locally.
 4. Update the `application.properties` file with your MySQL database credentials:
 
     ```properties
-    spring.datasource.url=jdbc:mysql://localhost:3306/sunbase
-    spring.datasource.username=root
+    spring.datasource.url=jdbc:mysql://localhost:3306/yourdatabase
+    spring.datasource.username=yourusername
     spring.datasource.password=yourPassword
     ```
 
