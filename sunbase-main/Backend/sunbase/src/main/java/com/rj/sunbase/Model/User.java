@@ -1,4 +1,4 @@
-package com.rj.sunbase.Security;
+package com.rj.sunbase.Model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

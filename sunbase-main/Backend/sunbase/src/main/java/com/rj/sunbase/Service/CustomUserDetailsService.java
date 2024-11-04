@@ -1,10 +1,13 @@
-package com.rj.sunbase.Security;
+package com.rj.sunbase.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.rj.sunbase.Model.User;
+import com.rj.sunbase.Repository.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService{

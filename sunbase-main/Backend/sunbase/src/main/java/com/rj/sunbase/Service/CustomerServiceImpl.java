@@ -14,7 +14,7 @@ import com.rj.sunbase.Model.Customer;
 import com.rj.sunbase.Repository.CustomerRepository;
 
 @Service
-public class CustomerServiceImpl implements CustomerServiceIntr {
+public class CustomerServiceImpl implements CustomerService {
 
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -61,17 +61,6 @@ public class CustomerServiceImpl implements CustomerServiceIntr {
 			return customerRepository.save(existingCustomer);
 		}).orElseThrow(() -> new CustomerNotFoundException("Customer not found with id: " + id));
 
-	}
-
-	/**
-	 * Retrieve a paginated list of customers.
-	 * 
-	 * @param pageable The pagination and sorting information.
-	 * @return A page of customers.
-	 */
-	@Override
-	public Page<Customer> getCustomers(Pageable pageable) {
-		return customerRepository.findAll(pageable);
 	}
 
 	/**

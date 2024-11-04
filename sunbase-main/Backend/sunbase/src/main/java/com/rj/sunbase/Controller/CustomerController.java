@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.rj.sunbase.Exception.CustomerNotFoundException;
 import com.rj.sunbase.Model.Customer;
-import com.rj.sunbase.Service.CustomerServiceIntr;
+import com.rj.sunbase.Service.CustomerService;
 import com.rj.sunbase.Service.SyncService;
 
 @RestController
@@ -29,7 +29,7 @@ import com.rj.sunbase.Service.SyncService;
 public class CustomerController {
 
 	@Autowired
-	private CustomerServiceIntr customerService;
+	private CustomerService customerService;
 
 	@Autowired
 	private SyncService syncService;
@@ -69,23 +69,6 @@ public class CustomerController {
 	public ResponseEntity<List<Customer>> getCustomers() throws CustomerNotFoundException {
 
 		return new ResponseEntity<>(customerService.getCustomers(), HttpStatus.ACCEPTED);
-	}
-
-	/**
-	 * Get a paginated and sorted list of customers.
-	 * 
-	 * @param page The page number to retrieve (default is 0).
-	 * @param size The number of customers per page (default is 10).
-	 * @param sort The sorting criteria in the format "property,direction" (default
-	 *             is "id,asc").
-	 * @return ResponseEntity with a page of customers and status code.
-	 */
-	@GetMapping("/get")
-	public ResponseEntity<Page<Customer>> getCustomers(@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id,asc") String[] sort) {
-		Pageable pageable = PageRequest.of(page, size,
-				Sort.by(Sort.Order.by(sort[0]).with(Sort.Direction.fromString(sort[1]))));
-		return ResponseEntity.ok(customerService.getCustomers(pageable));
 	}
 
 	/**

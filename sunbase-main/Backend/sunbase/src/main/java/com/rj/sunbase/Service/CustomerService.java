@@ -8,11 +8,10 @@ import com.rj.sunbase.Model.Customer;
 
 import java.util.List;
 
-public interface CustomerServiceIntr {
+public interface CustomerService {
 	
 	public Customer createCustomer(Customer customer) throws CustomerNotFoundException;
 	public Customer updateCustomer(String id, Customer customer) throws CustomerNotFoundException;
-	public Page<Customer> getCustomers(Pageable pageable);
 	public Customer getCustomerById(String id) throws CustomerNotFoundException;
     public void deleteCustomer(String id) throws CustomerNotFoundException;
 	public List<Customer> getCustomers() throws CustomerNotFoundException;

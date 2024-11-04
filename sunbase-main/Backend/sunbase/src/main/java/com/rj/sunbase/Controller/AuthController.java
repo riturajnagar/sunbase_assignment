@@ -1,4 +1,4 @@
-package com.rj.sunbase.Security;
+package com.rj.sunbase.Controller;
 
 import java.util.List;
 
@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rj.sunbase.Model.Customer;
+import com.rj.sunbase.Model.User;
+import com.rj.sunbase.Security.JwtUtil;
 import com.rj.sunbase.Service.SyncService;
+import com.rj.sunbase.Service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
