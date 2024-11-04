@@ -16,4 +16,7 @@ public interface CustomerServiceIntr {
 	public Customer getCustomerById(String id) throws CustomerNotFoundException;
     public void deleteCustomer(String id) throws CustomerNotFoundException;
 	public List<Customer> getCustomers() throws CustomerNotFoundException;
+	
+	public 	Page<Customer> searchAndFilterCustomers(String searchTerm, String city, String state, String email,
+			Pageable pageable) throws CustomerNotFoundException;
 }

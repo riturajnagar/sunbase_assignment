@@ -1,37 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customers</title>
-    <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer List</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <button onclick="window.location.href='addCustomer.html'">Add Customer</button>
-    <button onclick="syncCustomers()">Sync</button>
-
-    <input type="text" id="searchBox" placeholder="Search by name" oninput="filterCustomers()">
-    <button onclick="sortByCity()">Sort by City</button>
-
-    <table id="customerTable">
-        <thead>
-            <tr>
-                <th>uuid</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Street</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
+  <div class="container">
+    <h2>Customers</h2>
+    <div class="navbar">
+      <button onclick="openAddCustomerPopup()">Add Customer</button>
+      <button onclick="syncCustomers()">Sync Customers</button>
+      
+      <div class="search-controls">
+        <select id="searchBy">
+          <option value="name">Search by Name</option>
+          <option value="city">Search by City</option>
+          <option value="phone">Search by Phone</option>
+          <option value="email">Search by Email</option>
+        </select>
+        <input type="text" id="searchTerm" placeholder="Search term">
+        <button onclick="applyFilters()">Search</button>
+        
+        <select id="sortBy">
+          <option value="first_name">Sort by Name</option>
+          <option value="city">Sort by City</option>
+          <option value="email">Sort by Email</option>
+          <option value="phone">Sort by Phone</option>
+        </select>
+        <select id="sortOrder">
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+        <button onclick="applyFilters()">Sort</button>
+      </div>
+    </div>
+    
+    <table id="customers-table">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Street</th>
+          <th>Address</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Edit</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody id="customers"></tbody>
     </table>
+    
+    <div class="pagination-controls">
+      <button id="prevPageButton" onclick="prevPage()">Previous</button>
+      <button id="nextPageButton" onclick="nextPage()">Next</button>
+    </div>
+    <button onclick="logout()">Logout</button>
+  </div>
 
-    <script src="js/customers.js"></script>
+  <!-- Add Customer Popup -->
+  <div id="addCustomerPopup" class="popup">
+    <div class="popup-content">
+      <h3>Add New Customer</h3>
+      <label>First Name:</label>
+      <input type="text" id="newFirstName">
+      <label>Last Name:</label>
+      <input type="text" id="newLastName">
+      <label>Street:</label>
+      <input type="text" id="newStreet">
+      <label>Address:</label>
+      <input type="text" id="newAddress">
+      <label>City:</label>
+      <input type="text" id="newCity">
+      <label>State:</label>
+      <input type="text" id="newState">
+      <label>Email:</label>
+      <input type="email" id="newEmail">
+      <label>Phone:</label>
+      <input type="tel" id="newPhone">
+      <button onclick="addCustomer()">Add Customer</button>
+      <button onclick="closeAddCustomerPopup()">Cancel</button>
+    </div>
+  </div>
+
+  <script src="js/customers.js"></script>
+  
 </body>
 </html>

@@ -1,227 +1,178 @@
-let customersData=[];
-let sortOrder = 'asc';
+const API_URL = 'http://localhost:8088';
 
-document.addEventListener('DOMContentLoaded', async function() {
-    const token = localStorage.getItem('token');
-    
+let currentPage = 0;
+const token = localStorage.getItem('token');
+
+document.addEventListener('DOMContentLoaded', () => {
     if (!token) {
-        alert('No token found. Please login first.');
-        return;
-    }
-
-    console.log('Token:', token);
-    
-    try {
-        const response = await fetch('http://localhost:8088/customers/', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            console.log("Customer data:", data);
-            customersData = data;
-            const table = document.getElementById('customerTable');
-            
-            if (!table) {
-                console.error('Table element with ID "customerTable" not found.');
-                return;
-            }
-
-            const tbody = table.getElementsByTagName('tbody')[0];
-            
-            if (!tbody) {
-                console.error('Table "tbody" element not found.');
-                return;
-            }
-
-            // Clear existing rows (optional, if you want to reset the table first)
-            tbody.innerHTML = '';
-
-            if (Array.isArray(data)) {
-                console.log("hi it is array")
-                data.forEach(customer => {
-                    console.log('Processing customer:', customer); // Check each customer object
-                    const row = tbody.insertRow();
-                    row.insertCell(0).innerText = customer.uuid;
-                    row.insertCell(1).innerText = customer.first_name;
-                    row.insertCell(2).innerText = customer.last_name;
-                    row.insertCell(3).innerText = customer.street;
-                    row.insertCell(4).innerText = customer.address;
-                    row.insertCell(5).innerText = customer.city;
-                    row.insertCell(6).innerText = customer.state;
-                    row.insertCell(7).innerText = customer.email;
-                    row.insertCell(8).innerText = customer.phone;
-                    
-                    const actionsCell = row.insertCell(9);
-                    
-                    const editButton = document.createElement('button');
-                    editButton.innerText = 'Edit';
-                    editButton.onclick = () => editCustomer(customer.uuid);
-                    actionsCell.appendChild(editButton);
-                    
-                    const deleteButton = document.createElement('button');
-                    deleteButton.innerText = 'Delete';
-                    deleteButton.onclick = () => deleteCustomer(customer.uuid);
-                    actionsCell.appendChild(deleteButton);
-                });
-            } else {
-                console.error('Error: data.content is not an array or is undefined', data);
-            }
-
-          
-
-            console.log('Table updated successfully');
-        } else {
-            alert('Failed to load customers. Status: ' + response.status);
-        }
-    } catch (error) {
-        console.error('Error fetching customer data:', error);
-        alert('Error fetching customer data');
+        window.location.href = './register.html';
+    } else {
+        getCustomers();
     }
 });
 
-async function syncCustomers() {
-    const token = localStorage.getItem('token');
+async function getCustomers(searchBy = 'name', searchTerm = '', sortBy = 'first_name', sortOrder = 'asc', page = 0) {
+    const url = new URL(`${API_URL}/customers/search`);
+    url.searchParams.append('searchBy', searchBy);
+    url.searchParams.append('searchTerm', searchTerm);
+    url.searchParams.append('sort', sortBy);
+    url.searchParams.append('dir', sortOrder);
+    url.searchParams.append('page', page);
+    url.searchParams.append('size', 4);
+// console.log(url);
     try {
-        const response = await fetch('http://localhost:8088/customers/sync', {
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
 
-        if (response.ok) {
-            alert('Customers synced successfully!');
-            fetchCustomers();
-        }else if(response.status === 400){
-            const data = await response.json();
-            alert('Failed to sync customers. Error: ' + data.message);
+        if(response.status == 404){
+            alert('No customers Found');
+        }else if (response.ok) {
+            const customersPage = await response.json();
+            const customers = customersPage.content;
+            const customerTableBody = document.getElementById('customers');
+            customerTableBody.innerHTML = '';
 
+            customers.forEach(customer => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${customer.first_name}</td>
+                    <td>${customer.last_name}</td>
+                    <td>${customer.street}</td>
+                    <td>${customer.address}</td>
+                    <td>${customer.city}</td>
+                    <td>${customer.state}</td>
+                    <td>${customer.email}</td>
+                    <td>${customer.phone}</td>
+                    <td><button class="edit-button" onclick="editCustomer('${customer.uuid}')">Edit</button></td>
+                    <td><button class="delete-button" onclick="deleteCustomer('${customer.uuid}')">Delete</button></td>
+                `;
+                customerTableBody.appendChild(tr);
+            });
+
+            document.getElementById('prevPageButton').disabled = customersPage.first;
+            document.getElementById('nextPageButton').disabled = customersPage.last;
         } else {
-            alert('Failed to sync customers!');
+          
+            alert('Failed to fetch customers!');
         }
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
-async function fetchCustomers() {
-    const token = localStorage.getItem('token');
-   
+function applyFilters() {
+    const searchBy = document.getElementById('searchBy').value;
+    const searchTerm = document.getElementById('searchTerm').value;
+    const sortBy = document.getElementById('sortBy').value;
+    
+    const sortOrder = document.getElementById('sortOrder').value;
 
+    getCustomers(searchBy, searchTerm, sortBy, sortOrder, currentPage);
+}
+
+function nextPage() {
+    currentPage++;
+    applyFilters();
+}
+
+function prevPage() {
+    if (currentPage > 0) {
+        currentPage--;
+        applyFilters();
+    }
+}
+
+async function syncCustomers() {
     try {
-        const response = await fetch('http://localhost:8088/customers/', {
+        const response = await fetch(`${API_URL}/api/sync`, {
             method: 'GET',
             headers: {
-                'Authorization': 'Bearer ' + token
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        console.log(response)
+        if (response.ok) {
+            alert('Customers synced successfully!');
+            getCustomers();
+        } else {
+            alert('Customers already Synced!');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function openAddCustomerPopup() {
+    document.getElementById('addCustomerPopup').style.display = 'flex';
+}
+
+function closeAddCustomerPopup() {
+    document.getElementById('addCustomerPopup').style.display = 'none';
+}
+
+async function addCustomer() {
+    const newCustomer = {
+        first_name: document.getElementById('newFirstName').value,
+        last_name: document.getElementById('newLastName').value,
+        street: document.getElementById('newStreet').value,
+        address: document.getElementById('newAddress').value,
+        city: document.getElementById('newCity').value,
+        state: document.getElementById('newState').value,
+        email: document.getElementById('newEmail').value,
+        phone: document.getElementById('newPhone').value
+    };
+
+    try {
+        const response = await fetch(`${API_URL}/customers/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(newCustomer)
+        });
+
+        if (response.ok) {
+            alert('Customer added successfully!');
+            closeAddCustomerPopup();
+            getCustomers();
+        } else {
+            alert('Failed to add customer!');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function deleteCustomer(uuid) {
+    try {
+        const response = await fetch(`${API_URL}/customers/${uuid}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
         });
 
         if (response.ok) {
-            const customers = await response.json();
-            const customerTable = document.getElementById('customerTable').getElementsByTagName('tbody')[0];
-            customerTable.innerHTML = ''; // Clear existing table content
-
-            // Populate the table with fetched customers
-            customersData = customers;
-
-            customers.forEach(customer => {
-                const row = customerTable.insertRow();
-                row.insertCell(0).innerText = customer.first_name;
-                row.insertCell(1).innerText = customer.last_name;
-                row.insertCell(2).innerText = customer.street;
-                row.insertCell(3).innerText = customer.address;
-                row.insertCell(4).innerText = customer.city;
-                row.insertCell(5).innerText = customer.state;
-                row.insertCell(6).innerText = customer.email;
-                row.insertCell(7).innerText = customer.phone;
-                const actionsCell = row.insertCell(9);
-                const editButton = document.createElement('button');
-                editButton.innerText = 'Edit';
-                editButton.onclick = () => editCustomer(customer.uuid);
-                actionsCell.appendChild(editButton);
-                const deleteButton = document.createElement('button');
-                deleteButton.innerText = 'Delete';
-                deleteButton.onclick = () => deleteCustomer(customer.uuid);
-                actionsCell.appendChild(deleteButton);
-            });
+            alert('Customer deleted successfully!');
+            window.location.href = './customers.html';
         } else {
-            console.error('Failed to fetch customers');
+            alert('Failed to delete customer!');
         }
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
-function editCustomer(id) {
-    // Redirect to edit form
-    window.location.href = `edit_customer.html?id=${id}`;
+function editCustomer(uuid) {
+    window.location.href = `./edit_customer.html?id=${uuid}`;
 }
 
-async function deleteCustomer(id) {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`http://localhost:8088/customers/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-
-    if (response.ok) {
-        location.reload();
-    } else {
-        alert('Failed to delete customer');
-    }
-}
-
-
-function filterCustomers() {
-    const searchQuery = document.getElementById('searchBox').value.toLowerCase();
-    const filteredCustomers = customersData.filter(customer => {
-        return customer.first_name.toLowerCase().includes(searchQuery) || 
-               customer.last_name.toLowerCase().includes(searchQuery);
-    });
-    console.log("Filtered customers:", filteredCustomers);
-    searchResults(filteredCustomers);
-}
-
-function searchResults(filteredCustomers) {
-    const customerTable = document.getElementById('customerTable').getElementsByTagName('tbody')[0];
-    customerTable.innerHTML = '';
-
-    filteredCustomers.forEach(customer => {
-    console.log("customer data after search: ", customer);
-        const row = customerTable.insertRow();
-        row.insertCell(0).innerText = customer.uuid;
-        row.insertCell(1).innerText = customer.first_name;
-        row.insertCell(2).innerText = customer.last_name;
-        row.insertCell(3).innerText = customer.street;
-        row.insertCell(4).innerText = customer.address;
-        row.insertCell(5).innerText = customer.city;
-        row.insertCell(6).innerText = customer.state;
-        row.insertCell(7).innerText = customer.email;
-        row.insertCell(8).innerText = customer.phone;
-        const actionsCell = row.insertCell(9);
-        const editButton = document.createElement('button');
-        editButton.innerText = 'Edit';
-        editButton.onclick = () => editCustomer(customer.uuid);
-        actionsCell.appendChild(editButton);
-        const deleteButton = document.createElement('button');
-        deleteButton.innerText = 'Delete';
-        deleteButton.onclick = () => deleteCustomer(customer.uuid);
-        actionsCell.appendChild(deleteButton);
-    });
-}
-
-function sortByCity() {
-    if (sortOrder === 'asc') {
-        customersData.sort((a, b) => a.city.localeCompare(b.city)); // Ascending order
-        sortOrder = 'desc';
-    } else {
-        customersData.sort((a, b) => b.city.localeCompare(a.city)); // Descending order
-        sortOrder = 'asc';
-    }
-    searchResults(customersData); // Display sorted customers
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = './login.html';
 }

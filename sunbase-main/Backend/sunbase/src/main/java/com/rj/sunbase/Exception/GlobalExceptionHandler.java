@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
 		err.setTimestamp(LocalDateTime.now());
 		err.setMessage(customerNotFoundException.getMessage());
 		err.setDescription(req.getDescription(false));
-		return new ResponseEntity<MyErrorDetails>(err, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<MyErrorDetails>(err, HttpStatus.NOT_FOUND);
 	}
 	
 	
