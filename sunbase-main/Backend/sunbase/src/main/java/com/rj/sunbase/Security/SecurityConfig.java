@@ -12,11 +12,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig  {
+public class SecurityConfig implements WebMvcConfigurer {
 
 	 private final UserDetailsService userDetailsService;
 	    private final JwtRequestFilter jwtRequestFilter;
@@ -51,6 +53,20 @@ public class SecurityConfig  {
 	    @Bean
 	    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
 	        return authenticationConfiguration.getAuthenticationManager();
+	    }
+	    
+	    @Bean
+	    public WebMvcConfigurer corsConfigurer() {
+	        return new WebMvcConfigurer() {
+	            @Override
+	            public void addCorsMappings(CorsRegistry registry) {
+	                registry.addMapping("/**")
+	                        .allowedOrigins("http://127.0.0.1:5500", "http://localhost:8088") // Allow your frontend's origin
+	                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+	                        .allowedHeaders("*")
+	                        .allowCredentials(true);
+	            }
+	        };
 	    }
 }
 
